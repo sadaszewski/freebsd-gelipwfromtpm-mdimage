@@ -1,10 +1,17 @@
 #!/bin/sh
 
-WORKDIR={"$1":-/tmp/gelipwfromtpm-mdimage}
-IMGFNAM={"$2":-/boot/initramfs}
+set -e
+
+WORKDIR=${WORKDIR:-/tmp/gelipwfromtpm-workdir}
+MNTDIR=${MNTDIR:-/tmp/gelipwfromtpm-mntdir}
+IMGFNAM=${IMGFNAM:-/boot/initramfs}
+SIZE=${SIZE:-24m}
+MDUNIT=${MDUNIT:-md1}
 
 echo "WORKDIR: ${WORKDIR}"
 echo "IMGFNAM: ${IMGFNAM}"
+
+mkdir -p ${MNTDIR}
 
 mkdir -p ${WORKDIR}/bin
 mkdir -p ${WORKDIR}/boot
@@ -55,5 +62,14 @@ for FNAM in libsysdecode; do
   cp -v /usr/lib/${FNAM}.so* ${WORKDIR}/usr/lib/
 done
 
-makefs ${WORKDIR} ${IMGFNAM}
-rm -rvf ${WORKDIR}
+rm -ivf ${IMGFNAM}
+truncate -s ${SIZE} ${IMGFNAM}
+mdconfig ${IMGFNAM}
+newfs /dev/${MDUNIT}
+mount /dev/${MDUNIT} ${MNTDIR}
+cp -a ${WORKDIR}/* ${MNTDIR}/
+umount ${MNTDIR}
+mdconfig -du ${MDUNIT}
+rm -rf ${WORKDIR}
+rmdir -v ${MNTDIR}
+
