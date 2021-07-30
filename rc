@@ -1,0 +1,13 @@
+#!/bin/sh
+
+export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+
+mount -t devfs none /dev
+
+/bin/sh
+
+tpm2_dictionarylockout -c
+tpm2_nvread 0x1000000 | geli attach -j - da0p2
+kenv vfs.root.mountfrom=zfs:zroot/ROOT/default
+reboot -r
+
