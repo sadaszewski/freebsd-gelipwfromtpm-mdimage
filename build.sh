@@ -1,7 +1,10 @@
 #!/bin/sh
 
-WORKDIR="$1"
-IMGFNAM="$2"
+WORKDIR={"$1":-/tmp/gelipwfromtpm-mdimage}
+IMGFNAM={"$2":-/boot/initramfs}
+
+echo "WORKDIR: ${WORKDIR}"
+echo "IMGFNAM: ${IMGFNAM}"
 
 mkdir -p ${WORKDIR}/bin
 mkdir -p ${WORKDIR}/boot
@@ -53,3 +56,4 @@ for FNAM in libsysdecode; do
 done
 
 makefs ${WORKDIR} ${IMGFNAM}
+rm -rvf ${WORKDIR}
