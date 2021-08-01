@@ -35,6 +35,14 @@ done
 ${CP} ./rc ${WORKDIR}/etc/
 chmod 755 ${WORKDIR}/etc/rc
 
+${CP} /etc/ttys ${WORKDIR}/etc/
+
+touch ${WORKDIR}/etc/passwd-empty
+pwd_mkdb -d ${WORKDIR}/etc -p ${WORKDIR}/etc/passwd-empty
+touch ${WORKDIR}/etc/group
+pw -R ${WORKDIR} user add root -u 0 -h 0
+rm -vf ${WORKDIR}/etc/passwd-empty
+
 for FNAM in libedit libc libncursesw libgeom libutil libbsdxml libsbuf libthr libcrypto libkiconv libmd; do
   ${CP} /lib/${FNAM}.so* ${WORKDIR}/lib/
 done
